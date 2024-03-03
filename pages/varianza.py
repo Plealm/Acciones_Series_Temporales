@@ -4,18 +4,22 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import yfinance as yf
 import numpy as np
 import datetime as dt
 import warnings
 import matplotlib.pyplot as plt
+from scipy.stats import boxcox
+import yfinance as yf
+from scipy import stats
 
 ticker_name = 'BC'
-
 data = yf.download(ticker_name, start='2000-01-01', end='2020-01-01')
 df = pd.DataFrame()
 df["Date"] = pd.to_datetime(data.index).date
 df["Close"] = data["Close"].values
+
+# Análisis Box-Cox
+df['BoxCox_Close'], lambda_value = boxcox(df['Close'])  # Agregar 1 para evitar problemas con valores no positivos
 
 fig = go.Figure()
 # Suponiendo que ya tienes el DataFrame df
@@ -23,13 +27,22 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=df["Date"],
     y=df["Close"],
-    name="NeuralProphet Forescasting",
+    name="Original",
     line=dict(color='blue', width=2)
+))
+fig.add_trace(go.Scatter(
+    x=df["Date"],
+    y=df["BoxCox_Close"],
+    name="Box-Cox",
+    line=dict(color='green', width=2)
 ))
 fig.update_xaxes(type='category')  # Para que las fechas se muestren correctamente
 
 # Centrar el título
-fig.update_layout(title_text='Precio de acciones Bancolombia', title_x=0.5)
+fig.update_layout(title=dict(
+        text = 'Precio de acciones Bancolombia <br>' + f'Box-Cox (λ={round(lambda_value, 3)})',
+        font=dict(size=20)  # Ajustar el tamaño del título
+    ) , title_x=0.75)
 fig.update_layout(
     xaxis=dict(
         rangeselector=dict(
@@ -81,27 +94,46 @@ fig.update_layout(
         y=1,
         xanchor="left",
         x=-.35
-    )
+    ),
+    margin=dict(l=0, r=20, t=100, b=50)
 )
 
-dash.register_page(__name__, name="Importación de datos", path="/importacion")
+fig.update_layout(
+    xaxis=dict(title=dict(font=dict(size=20))),
+    yaxis=dict(title=dict(font=dict(size=20))),
+    legend=dict(font=dict(size=17))
+)
 
+
+dash.register_page(__name__, name="Estabilización de la varianza", path="/varianza")
 
 df = px.data.tips()
 
 layout = html.Div(
-        [
+    [
         dcc.Markdown('''
-        ## Importación de datos       
+        ## Estabilización de la varianza       
     '''
-    , style={'text-align': 'center', 'margin-bottom': '20px'}
-    ),
-            
-        dcc.Markdown('''
-                     Los datos utilizados en este análisis fueron 
-                     adquiridos mediante la herramienta **yfinance**, con el fin de obtener 
-                     el precio de cierre de las acciones de Bancolombia.
-                     ''', style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
+    , style={'text-align': 'center', 'margin-bottom': '20px'}),
+        dcc.Markdown(
+            '''
+            En esta sección se buscará una herramienta para estabilizar la varianza, 
+
+            #### Familia de transformaciones Box-Cox:
+
+            En ocasiones la serie presenta varianza marginal no constante a lo largo del tiempo, lo cual hace necesario tener en cuenta tal característica. En este caso, se sugiere hacer una transformación de potencia para estabilizar la varianza. Esta familia de transformaciones se llaman transformaciones Box-Cox.
+
+            $$
+            f_{\\lambda}(u_{t})= \\begin{cases}
+                \\lambda^{-1}(u^{\\lambda}_{t}-1), & \\text{si $u_{t} \\geq 0$, para $\\lambda>0$,}\\\\
+                \\ln(u_{t}), & \\text{si $u_{t}>0$, para $\\lambda=0$}.
+            \\end{cases}
+            $$
+
+            Note que la familia de funciones dependen del $\lambda$ escogido.
+            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+            dangerously_allow_html=True
+        ),
         dcc.Graph(figure=fig)
     ]
 )
