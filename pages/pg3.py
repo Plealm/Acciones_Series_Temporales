@@ -769,9 +769,11 @@ layout = html.Div(
             ''' 
             ##  2.7  Descomposición STL
 
-                STL son las iniciales de "Seasonal and Trend decomposition using Loess",el cual fue desarrollado por R. B. Cleveland et al. (1990).
+                STL son las iniciales de "Seasonal and Trend decomposition using Loess",el cual fue
+                desarrollado por R. B. Cleveland et al. (1990).
 
-                Note que se obliga a extraer un componente estacional, sin embargo puede que está componente en verdad no exista, 
+                Note que se obliga a extraer un componente estacional, 
+                sin embargo puede que está componente en verdad no exista, 
                 por eso se debe verificar que en efecto hay.
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
