@@ -19,9 +19,11 @@ getSymbols(symbol, src = "yahoo", from = start_date, to = end_date)
 
 # Extrae la fecha y el precio de cierre ('Close') y resetea el índice
 data <- data.frame(Date = index(BC), Close = Cl(BC))
-data <- data[ ,-1]
+print(data)
+ts_data <- ts(data$Close, start = c(2000, 1), frequency = 365.25)
+
 # Muestra las primeras filas del conjunto de datos
-ts(data)
+print(ts_data)
 head(data)
 ```
 
@@ -105,6 +107,57 @@ sprintf("El valor de la frecuencia donde se máximiza el periodograma para la se
 ```
 
  
+
+```{r}
+# Instalar paquetes si no están instalados
+if (!requireNamespace("quantmod", quietly = TRUE)) {
+  install.packages("quantmod")
+}
+
+if (!requireNamespace("forecast", quietly = TRUE)) {
+  install.packages("forecast")
+}
+
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+# Cargar paquetes
+library(quantmod)
+library(forecast)
+library(ggplot2)
+
+# 1. Extraer datos desde 2000-01-01 al 2020-01-01 de las acciones de Bancolombia (BC) con quantmod
+getSymbols("BC", src = "yahoo", from = "2000-01-01", to = "2020-01-01", auto.assign = TRUE)
+bc_data <- data.frame(Date = index(BC), Close = as.numeric(Cl(BC)))
+
+# 2. Corregir la varianza con Boxcox
+bc_returns <- diff(log(bc_data$Close))
+lambda <- BoxCox.lambda(bc_returns)
+bc_returns_boxcox <- BoxCox(bc_returns, lambda)
+
+# 3. Quitar la tendencia por medio de loess
+trend <- loess(bc_returns_boxcox ~ time(bc_returns_boxcox))
+bc_detrended <- residuals(trend)
+
+# 4. Graficar el periodograma
+per <- spec.pgram(bc_detrended, log = "no")
+plot(per, main = "Periodograma")
+
+# 5. Graficar el montplot()
+montplot(bc_detrended, main = "Montgomery Plot")
+
+# 6. Graficar ggseasonplot
+bc_ts <- ts(bc_detrended)
+seasonal_decomposition <- decompose(bc_ts)
+ggseasonplot(seasonal_decomposition, main = "Seasonal Decomposition")
+
+# Guardar los gráficos (opcional)
+# ggsave("montgomery_plot.png", plot = last_plot(), device = "png")
+# ggsave("seasonal_decomposition_plot.png", plot = last_plot(), device = "png")
+
+
+```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 

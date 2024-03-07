@@ -9,6 +9,7 @@ import numpy as np
 import datetime as dt
 import warnings
 import matplotlib.pyplot as plt
+from PIL import Image
 
 ticker_name = 'BC'
 
@@ -84,6 +85,11 @@ fig.update_layout(
     )
 )
 
+acf = Image.open("./img/acf.png")
+
+
+
+
 dash.register_page(__name__, name="Importación de datos", path="/importacion")
 
 
@@ -102,7 +108,19 @@ layout = html.Div(
                      adquiridos mediante la herramienta **yfinance**, con el fin de obtener 
                      el precio de cierre de las acciones de Bancolombia.
                      ''', style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
-        dcc.Graph(figure=fig)
+        dcc.Graph(figure=fig),
+            
+        dcc.Markdown('''
+                     Como se puede observar, se asemeja como una **caminata aleatoria**.
+                
+                    Sea $\\{S_t\\}$ la caminata aleatoria definida como 
+                    
+                    $$S_t = X_1 + X_2 + \ldots + X_t$$
+                    
+                    donde $\{X_t\}$ son variables aleatorias independientes e idénticamente distribuidas
+                    con media cero y varianza $t\\sigma^2$, y definiendo $S_0 = 0$.
+                     ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
+        html.Img(src=acf, style={'width': '60%', 'height': 'auto', 'margin-left': '250px'}),
     ]
 )
 
