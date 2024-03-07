@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import boxcox
 import yfinance as yf
 from scipy import stats
+from PIL import Image
 
 ticker_name = 'BC'
 data = yf.download(ticker_name, start='2000-01-01', end='2020-01-01')
@@ -19,7 +20,7 @@ df["Date"] = pd.to_datetime(data.index).date
 df["Close"] = data["Close"].values
 
 # Análisis Box-Cox
-df['BoxCox_Close'], lambda_value = boxcox(df['Close'])  # Agregar 1 para evitar problemas con valores no positivos
+df['BoxCox_Close'], lambda_value = boxcox(df['Close'])
 
 fig = go.Figure()
 # Suponiendo que ya tienes el DataFrame df
@@ -40,7 +41,7 @@ fig.update_xaxes(type='category')  # Para que las fechas se muestren correctamen
 
 # Centrar el título
 fig.update_layout(title=dict(
-        text = 'Precio de acciones Bancolombia <br>' + f'Box-Cox (λ={round(lambda_value, 3)})' # Ajustar el tamaño del título
+        text = 'Transformación Box-Cox ' # Ajustar el tamaño del título
     ) , title_x=0.75)
 fig.update_layout(
     xaxis=dict(
@@ -99,6 +100,8 @@ fig.update_layout(
 
 
 
+lambda_plot = Image.open("./img/lambda_box_cox.png")
+
 
 dash.register_page(__name__, name="1. Estabilización de la varianza", path="/varianza")
 
@@ -129,6 +132,7 @@ layout = html.Div(
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
         ),
+        html.Img(src=lambda_plot, style={ 'height': '100%','width': 'auto', 'margin-left': '350px'}),
         dcc.Graph(figure=fig)
     ]
 )

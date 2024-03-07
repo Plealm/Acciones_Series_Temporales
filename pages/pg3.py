@@ -4,19 +4,19 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
-import datetime as dt
 from scipy.ndimage import gaussian_filter1d
 import statsmodels.api as sm
 from plotly.subplots import make_subplots
 import warnings
-import matplotlib.pyplot as plt
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import boxcox
 from statsmodels.tsa.seasonal import STL
 import yfinance as yf
-from scipy import stats
+import matplotlib.pyplot as plt
+import base64
+from PIL import Image
+
 
 warnings.filterwarnings("ignore")
 
@@ -672,7 +672,8 @@ fig6.update_layout(
 
 
 
-dash.register_page(__name__, name="2. Análisis de la tendencia y eliminación", path="/Tendencia")
+
+dash.register_page(__name__, name="2. Estimación de la tendencia", path="/Tendencia")
 
 df = px.data.tips()
 
@@ -769,31 +770,19 @@ layout = html.Div(
             ''' 
             ##  2.7  Descomposición STL
 
-                STL son las iniciales de "Seasonal and Trend decomposition using Loess",el cual fue
-                desarrollado por R. B. Cleveland et al. (1990).
+            STL son las iniciales de "Seasonal and Trend decomposition using Loess",el cual fue
+            desarrollado por R. B. Cleveland et al. (1990).
 
-                Note que se obliga a extraer un componente estacional, 
-                sin embargo puede que está componente en verdad no exista, 
-                por eso se debe verificar que en efecto hay.
+            Note que se obliga a extraer un componente estacional, 
+            sin embargo puede que está componente en verdad no exista, 
+            por eso se debe verificar que en efecto hay.
+                
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
         ),
          dcc.Graph(figure=fig5),
          
-         
-        dcc.Markdown(
-            ''' 
-            ## 2.6 Diferencia ordinaria
-
-            Apliquemos una diferencia ordinaria de orden 1 a la serie
-            
-            $$
-            \\nabla^1 Y_t=(1-B)^1 Y_t=Y_t-Y_{t-1}
-            $$
-            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
-            dangerously_allow_html=True
-        ),
-         dcc.Graph(figure=fig6),
+                  
          
          
         

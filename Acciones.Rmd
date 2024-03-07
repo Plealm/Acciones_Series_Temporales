@@ -1,0 +1,113 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
+
+```{r}
+library(quantmod)
+
+symbol <- "BC"
+start_date <- "2000-01-01"
+end_date <- "2020-01-01"
+
+# Descarga los datos históricos de acciones de Bancolombia
+getSymbols(symbol, src = "yahoo", from = start_date, to = end_date)
+
+# Extrae la fecha y el precio de cierre ('Close') y resetea el índice
+data <- data.frame(Date = index(BC), Close = Cl(BC))
+data <- data[ ,-1]
+# Muestra las primeras filas del conjunto de datos
+ts(data)
+head(data)
+```
+
+```{r}
+plot(data)
+```
+
+```{r}
+library(forecast)
+
+# Assuming "data" is your existing time series data
+
+# Estimate lambda using Box-Cox transformation with log-likelihood method
+lambda <- forecast::BoxCox.lambda(data, method = "loglik", lower = -1, upper = 3)
+
+# Print the estimated lambda
+cat("Estimated lambda:", lambda, "\n")
+
+# Perform Box-Cox transformation with the estimated lambda
+transformed_data <- forecast::BoxCox(data, lambda = lambda)
+
+# Create the plot
+positions <- seq(1, length(data), by = 10)  # Every 10th data point
+
+plot(data, type = "l", col = "blue", ylab = "Original Data")
+lines(transformed_data, type = "l", col = "red", ylab = "Transformed Data")
+legend("topright", legend = c("Original Data", "Transformed Data"), col = c("blue", "red"))
+axis(1, at = positions, labels = seq(1, length(data), by = 10), label = "Time")  # Add x-axis labels at specific positions
+```
+
+```{r}
+library(MASS) #Libreria para hacer la grafica
+png("./img/lambda_box_cox.png")
+b <- boxcox(lm(data ~ 1))
+lambda <- b$x[which.max(b$y)]
+abline(v = lambda, col = "red")
+title(main = paste("Box-Cox Transformation with Lambda =", round(lambda, 3)))
+dev.off()
+```
+
+```{r}
+library(forecast)
+
+# Assuming "transformed_data" is your Box-Cox transformed data
+
+# Identificar la tendencia usando lowess
+trend_lowess <- stats::lowess(transformed_data, f = 0.075)
+
+# Remover la tendencia del conjunto de datos transformados
+X_t <- detrended_data <- transformed_data - trend_lowess$y
+
+# Crear el gráfico con y sin la tendencia
+plot(transformed_data, type="l", col="red", ylab="Transformed Data with Trend", main="Original Data, Lowess Trend, and Detrended Data", ylim=c(-8, max(transformed_data)))
+lines(trend_lowess, col="blue", lty=2)
+lines(detrended_data, col="green", lty=2)
+legend("topright", legend=c("Transformed Data", "Lowess Trend", "Detrended Data"), col=c("red", "blue", "green"))
+
+
+```
+
+```{r}
+
+png("./img/lag1_plot.png")
+lag1_plot <- astsa::lag1.plot(X_t, 12)
+dev.off()
+```
+
+```{r}
+library(forecast)
+
+ggseasonplot(detrended_data)
+```
+
+```{r}
+PeriodgramadlAirPass=spectrum(as.numeric(detrended_data),log='no')
+```
+
+```{r}
+ubicacionlogAir=which.max(PeriodgramadlAirPass$spec)
+sprintf("El valor de la frecuencia donde se máximiza el periodograma para la serie es: %s",PeriodgramadlAirPass$freq[detrended_data])
+```
+
+ 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
