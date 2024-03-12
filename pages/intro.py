@@ -6,7 +6,7 @@ dash.register_page(__name__, name='Introducción', path='/')
 
 layout = html.Div([
     dcc.Markdown('''
-        ## Introducción       
+        # Introducción       
     '''
     , style={'text-align': 'center', 'margin-bottom': '60px'}
     ),
@@ -17,6 +17,17 @@ layout = html.Div([
     '''
     ,  style={'text-align': 'center', 'margin-bottom': '70px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}
     ),
+    dcc.Markdown('''
+        ### ¿Qué es una acción?       
+    '''
+    , style={'text-align': 'center', 'margin-bottom': '60px'}
+    ),
+    
+    dcc.Markdown(''' Una **acción** es una propiedad fraccionada de una empresa. En el caso de Bancolombia, se estaría dividiendo su propiedad
+                        en pequeñas fracciones, las cuales se pueden comprar o vender en el mercado bursátil. Estas existen en la renta
+                        varible puesto que no tiene un porcentaje fijo de ganacia  ya que se tiene volatilidad en su precio.
+                     ''', style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
+       
 
     dcc.Markdown('''
         **Autores:** Pedro Leal, Luis Mantilla, Bryam Bustos.

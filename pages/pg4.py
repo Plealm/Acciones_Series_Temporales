@@ -214,12 +214,19 @@ lag_plot = Image.open("./img/lag1_plot.png")
 
 
 
-dash.register_page(__name__, name="3. Eliminnación de tendencia y analísis", path="/analisis")
+dash.register_page(__name__, name="3. Eliminación de tendencia y analísis", path="/analisis")
 
 df = px.data.tips()
 
 layout = html.Div(
     [
+        dcc.Markdown(
+            ''' 
+            # Eliminación de Tendencia
+            
+            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+            dangerously_allow_html=True
+        ),
         dcc.Markdown(
             ''' 
             ## 3.1 Loess o Lowess

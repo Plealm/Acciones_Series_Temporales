@@ -680,14 +680,14 @@ df = px.data.tips()
 layout = html.Div(
     [
         dcc.Markdown('''
-        ## 2. Análisis de la tendencia y eliminación      
+        # 2. Análisis de la tendencia y eliminación      
     '''
     , style={'text-align': 'center', 'margin-bottom': '20px'}),
         dcc.Markdown(
             '''
             Los procedimientos que permiten estimar y extraer los componentes de tendencia y/o estacionalidad se conoce como **suavizamiento**.
             
-            ### 2.1. Promedio móvil :
+            ## 2.1. Promedio móvil :
             
             El promedio móvil es un método útil para descubrir ciertos rasgos en una serie de tiempo, como **tendencias a largo plazo y componentes estacionales**. En particular, si $x_t$ representa las observaciones, entonces una forma de predecir o estimar la tendencia de la serie es:
             

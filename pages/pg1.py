@@ -98,7 +98,7 @@ df = px.data.tips()
 layout = html.Div(
         [
         dcc.Markdown('''
-        ## Importación de datos       
+        # Importación de datos       
     '''
     , style={'text-align': 'center', 'margin-bottom': '20px'}
     ),
@@ -109,6 +109,8 @@ layout = html.Div(
                      el precio de cierre de las acciones de Bancolombia.
                      ''', style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
         dcc.Graph(figure=fig),
+        
+         
             
         dcc.Markdown('''
                      Como se puede observar, se asemeja como una **caminata aleatoria**.

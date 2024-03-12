@@ -61,6 +61,23 @@ layout = html.Div(
     [
         dcc.Markdown(
             ''' 
+            # Estacionalidad             
+            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+            dangerously_allow_html=True
+        ),
+        
+        dcc.Markdown(
+            ''' 
+            Note que al ser una serie de tiempo estilo *caminata aleatoria, no tiene estacionalidad*,
+            
+            $$Var(X_t) = t\\sigma^2$$
+            
+            Por lo que esta serie de tiempo no es estacionaria nisiquiera debilmente.            
+            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+            dangerously_allow_html=True
+        ),
+        dcc.Markdown(
+            ''' 
             ## 3.1 Serie Mensual
             
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
@@ -83,15 +100,6 @@ layout = html.Div(
         ),html.Img(src=perio, style={'width': '60%', 'height': 'auto', 'margin-left': '250px'}),
         
         
-         dcc.Markdown(
-            ''' 
-            #### Nota:
-            
-            El periodo máximo se observa en $f = 0.01269$, lo que indica un periodo de $T = \\frac{1}{f} = 78.9$. 
-            
-            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
-            dangerously_allow_html=True
-        ),
          
                   
          

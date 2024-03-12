@@ -110,14 +110,14 @@ df = px.data.tips()
 layout = html.Div(
     [
         dcc.Markdown('''
-        ## 1. Estabilización de la varianza       
+        # 1. Estabilización de la varianza       
     '''
     , style={'text-align': 'center', 'margin-bottom': '20px'}),
         dcc.Markdown(
             '''
             En esta sección se buscará una herramienta para estabilizar la varianza, 
 
-            #### Familia de transformaciones Box-Cox:
+            ### Familia de transformaciones Box-Cox:
 
             En ocasiones la serie presenta varianza marginal no constante a lo largo del tiempo, lo cual hace necesario tener en cuenta tal característica. En este caso, se sugiere hacer una transformación de potencia para estabilizar la varianza. Esta familia de transformaciones se llaman transformaciones Box-Cox.
 
