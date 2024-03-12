@@ -84,9 +84,14 @@ ubicacion <- which.max(Periogram$spec)
 # Get the frequency value at the index where the periodogram maximizes
 max_freq <- Periogram$freq[ubicacion]
 
-# Print the frequency value
-sprintf("The value of the frequency where the periodogram maximizes for the series is: %s", max_freq)
-sprintf("El periodo correspondiente es aproximadamente: %s",1/Periogram$freq[ubicacion])
+# Calculate the corresponding period
+max_period <- 1 / max_freq
+
+# Plot the periodogram
+
+# Add text annotation for frequency and period
+text(.27, 200, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
+text(.3, 175, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
 }
 
 ```
@@ -107,64 +112,15 @@ max_period <- 1 / max_freq
 # Plot the periodogram
 
 # Add text annotation for frequency and period
-text(.27, 4.5, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
-text(.3, 5, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
+text(.27, 200, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
+text(.3, 175, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
+dev.copy(png, "./img/periodograma.png")
+dev.off()
 
 
 ```
 
  
-
-```{r}
-# Instalar paquetes si no están instalados
-if (!requireNamespace("quantmod", quietly = TRUE)) {
-  install.packages("quantmod")
-}
-
-if (!requireNamespace("forecast", quietly = TRUE)) {
-  install.packages("forecast")
-}
-
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2")
-}
-
-# Cargar paquetes
-library(quantmod)
-library(forecast)
-library(ggplot2)
-
-# 1. Extraer datos desde 2000-01-01 al 2020-01-01 de las acciones de Bancolombia (BC) con quantmod
-getSymbols("BC", src = "yahoo", from = "2000-01-01", to = "2020-01-01", auto.assign = TRUE)
-bc_data <- data.frame(Date = index(BC), Close = as.numeric(Cl(BC)))
-
-# 2. Corregir la varianza con Boxcox
-bc_returns <- diff(log(bc_data$Close))
-lambda <- BoxCox.lambda(bc_returns)
-bc_returns_boxcox <- BoxCox(bc_returns, lambda)
-
-# 3. Quitar la tendencia por medio de loess
-trend <- loess(bc_returns_boxcox ~ time(bc_returns_boxcox))
-bc_detrended <- residuals(trend)
-
-# 4. Graficar el periodograma
-per <- spec.pgram(bc_detrended, log = "no")
-plot(per, main = "Periodograma")
-
-# 5. Graficar el montplot()
-montplot(bc_detrended, main = "Montgomery Plot")
-
-# 6. Graficar ggseasonplot
-bc_ts <- ts(bc_detrended)
-seasonal_decomposition <- decompose(bc_ts)
-ggseasonplot(seasonal_decomposition, main = "Seasonal Decomposition")
-
-# Guardar los gráficos (opcional)
-# ggsave("montgomery_plot.png", plot = last_plot(), device = "png")
-# ggsave("seasonal_decomposition_plot.png", plot = last_plot(), device = "png")
-
-
-```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
