@@ -46,7 +46,8 @@ acf(data2,lag.max =1000 )
 ## Estimación Lambda
 
 ```{r}
-
+library(forecast)
+library(MASS)
 b <- boxcox(lm(unlist(data2) ~ 1))
 lambda <- b$x[which.max(b$y)]
 # Plot the result with the name of the data frame in the title
