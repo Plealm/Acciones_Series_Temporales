@@ -100,7 +100,7 @@ fig.update_layout(
 
 
 
-lambda_plot = Image.open("./img/lambda_box_cox.png")
+lambda_plot = Image.open("../../img/lambda_box_cox.png")
 
 
 dash.register_page(__name__, name="1. Estabilización de la varianza", path="/varianza")
