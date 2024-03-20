@@ -23,81 +23,119 @@ data1 <- data.frame(Close = Cl(BC))
 data2 <- data[, -1]
 data3 <- data.frame(Date = index(BC), Close = data2)
 head(data1)
-head(data2)
-tail(data3)
+#head(data1)
+#head(data2)
+#head(data3)
+
 ```
 
-```{r}
-plot(data1)
-```
-
-```{r}
-plot(data2)
-```
+# Visualización de la serie
 
 ```{r}
 plot(data3)
 ```
 
+# ACF
+
 ```{r}
-library(MASS) #Libreria para hacer la grafica
-library(forecast)
-# List of data frames (data1, data2, data3) with corresponding names
-data_list <- list(data1 = data1, data2 = data2)
+acf(data2,lag.max =1000 )
+```
 
-# Iterate over the list of data frames
-for (i in seq_along(data_list)) {
-  # Perform Box-Cox transformation analysis
-  b <- boxcox(lm(unlist(data_list[[i]]) ~ 1))
-  lambda <- b$x[which.max(b$y)]
-  
-  # Plot the result with the name of the data frame in the title
-  title(main = paste("Box-Cox Transformation with Lambda =", round(lambda, 3), "for", names(data_list)[i]))
-  abline(v = lambda, col = "red")
-  
-  # Apply Box-Cox transformation with the lambda found
-  transformed_data <- forecast::BoxCox(unlist(data_list[[i]]), lambda = lambda)
-  
-  # Convert date index to character
-  dates <- as.character(index(data_list[[i]]))
-  
-  # Plot original and transformed data
-  plot(dates, unlist(data_list[[i]]), type = "l", col = "blue", ylim = range(c(unlist(data_list[[i]]), transformed_data)), xlab = "Date", ylab = "Value", main = paste("Data and Transformed Data for", names(data_list)[i]))
+# Estabilizar la varianza
+
+## Estimación Lambda
+
+```{r}
+
+b <- boxcox(lm(unlist(data2) ~ 1))
+lambda <- b$x[which.max(b$y)]
+# Plot the result with the name of the data frame in the title
+title(main = paste("Box-Cox Transformation with Lambda =", round(lambda, 3) ))
+abline(v = lambda, col = "red")
+
+```
+
+## Grafico Box - Cox
+
+```{r}
+# Plot Box cox
+transformed_data <- forecast::BoxCox(unlist(data2), lambda = lambda)
+plot(dates, unlist(data2), type = "l", col = "blue", ylim = range(c(unlist(data2), transformed_data)), xlab = "Date", ylab = "Value", main = paste("Transformación Box-Cox"))
   lines(dates, transformed_data, col = "red")
-  legend("topright", legend = c("Original", "Transformed"), col = c("blue", "red"), lty = 1)
-  
-  trend_lowess <- stats::lowess(transformed_data, f = 0.075)
+legend("topright", legend = c("Original", "Transformed"), col = c("blue", "red"), lty = 1)
+```
 
-# Remover la tendencia del conjunto de datos transformados
+# Tendencia
+
+## Tendencia por Lowess
+
+```{r}
+
+trend_lowess <- stats::lowess(transformed_data, f = 0.075)
+
+# Remove trend from transformed data for data2
 detrended_data <- transformed_data - trend_lowess$y
 
-# Crear el gráfico con y sin la tendencia
-plot(transformed_data, type="l", col="red", ylab="Transformed Data with Trend", main=paste("Original Data, Lowess Trend, and Detrended Data", names(data_list)[i]), ylim=c(-8, max(transformed_data)))
+# Create plot with and without trend for data2
+plot(transformed_data, type="l", col="red", ylab="Transformed Data with Trend", main="Original Data, Lowess Trend, and Detrended Data for data2", ylim=c(-8, max(transformed_data)))
 lines(trend_lowess, col="blue", lty=2)
 lines(detrended_data, col="green", lty=2)
 legend("topright", legend=c("Transformed Data", "Lowess Trend", "Detrended Data"), col=c("red", "blue", "green"))
 
-Periogram=spectrum(as.numeric(detrended_data),log='no')
-# Get the index where the periodogram maximizes
-ubicacion <- which.max(Periogram$spec)
-
-# Get the frequency value at the index where the periodogram maximizes
-max_freq <- Periogram$freq[ubicacion]
-
-# Calculate the corresponding period
-max_period <- 1 / max_freq
-
-# Plot the periodogram
-
-# Add text annotation for frequency and period
-text(.27, 200, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
-text(.3, 175, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
-}
-
 ```
+
+### ACF detrended Lowess
+
+```{r}
+acf(detrended_data, lag.max = 100)
+```
+
+### Diagramas de dispersión de por restraso
+
+```{r}
+library(astsa)
+astsa::lag1.plot(detrended_data, 12)
+```
+
+### AMI
+
+```{r}
+nonlinearTseries::mutualInformation(detrended_data,lag.max = 100)
+```
+
+## Diferencia Ordinaria
+
+```{r}
+diferencia_ordinaria <- diff(transformed_data)
+plot(index(transformed_data)[-1], diferencia_ordinaria, type = "l", col = "blue",
+     xlab = "Date", ylab = "Ordinary Difference", main = "Ordinary Difference Time Series")
+```
+
+### ACF Detrended Diferencia Ordinaria
+
+```{r}
+acf(diferencia_ordinaria, lag.max = 100)
+```
+
+### Diagrama de dispersión por retardos
+
+```{r}
+astsa::lag1.plot(diferencia_ordinaria, 12)
+```
+
+### AMI
+
+```{r}
+nonlinearTseries::mutualInformation(diferencia_ordinaria,lag.max = 100)
+```
+
+# Estacionalidad
+## Periodograma Lowess
 
 ```{r}
 # Calculate the periodogram
+
+# Calculate the periodogram for data2
 Periogram <- spectrum(as.numeric(detrended_data), log = 'no')
 
 # Get the index where the periodogram maximizes
@@ -109,18 +147,38 @@ max_freq <- Periogram$freq[ubicacion]
 # Calculate the corresponding period
 max_period <- 1 / max_freq
 
-# Plot the periodogram
+# Plot the periodogram for data2
 
 # Add text annotation for frequency and period
 text(.27, 200, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
 text(.3, 175, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
-dev.copy(png, "./img/periodograma.png")
-dev.off()
+
 
 
 ```
 
- 
+## Periodograma Diferencia Ordinaria
+
+```{r}
+Periogram <- spectrum(as.numeric(diferencia_ordinaria), log = 'no')
+
+# Get the index where the periodogram maximizes
+ubicacion <- which.max(Periogram$spec)
+
+# Get the frequency value at the index where the periodogram maximizes
+max_freq <- Periogram$freq[ubicacion]
+
+# Calculate the corresponding period
+max_period <- 1 / max_freq
+
+# Plot the periodogram for data2
+
+# Add text annotation for frequency and period
+text(.35, .45, sprintf("Frecuencia: %s", round(max_freq, 5)), pos = 4)
+text(.35, .4, sprintf("Periodo: %s", round(max_period, 2)), pos = 4)
+```
+
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
