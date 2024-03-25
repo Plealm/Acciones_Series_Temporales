@@ -121,7 +121,7 @@ layout = html.Div(
                     donde $\{X_t\}$ son variables aleatorias independientes e idénticamente distribuidas
                     con media cero y varianza $t\\sigma^2$, y definiendo $S_0 = 0$.
                      ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'}),
-        html.Img(src=acf, style={'width': '60%', 'height': 'auto', 'margin-left': '250px'}),
+        html.Img(src=acf,  style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
     ]
 )
 

@@ -88,20 +88,31 @@ legend("topright", legend=c("Transformed Data", "Lowess Trend", "Detrended Data"
 ### ACF detrended Lowess
 
 ```{r}
-acf(detrended_data, lag.max = 100)
+png("../img/acf_detrend_lowess.jpg")
+
+# Calcular la función de autocorrelación
+acf_detrend_lowess <- acf(detrended_data, lag.max = 100)
+
+# Finalizar y cerrar el dispositivo gráfico
+dev.off()
+
 ```
 
 ### Diagramas de dispersión de por restraso
 
 ```{r}
 library(astsa)
+png("../img/lag_detrend_lowess.jpg")
 astsa::lag1.plot(detrended_data, 12)
+dev.off()
 ```
 
 ### AMI
 
 ```{r}
+png("../img/AMI_detrend_lowess.jpg")
 nonlinearTseries::mutualInformation(detrended_data,lag.max = 100)
+dev.off()
 ```
 
 ## Diferencia Ordinaria
@@ -115,19 +126,25 @@ plot(index(transformed_data)[-1], diferencia_ordinaria, type = "l", col = "blue"
 ### ACF Detrended Diferencia Ordinaria
 
 ```{r}
-acf(diferencia_ordinaria, lag.max = 100)
+png("../img/acf_detrend_Diff.jpg")
+diff_acf <-acf(diferencia_ordinaria, lag.max = 100)
+dev.off()
 ```
 
 ### Diagrama de dispersión por retardos
 
 ```{r}
+png("../img/lag_detrend_Diff.jpg")
 astsa::lag1.plot(diferencia_ordinaria, 12)
+dev.off()
 ```
 
 ### AMI
 
 ```{r}
+png("../img/AMI_detrend_Diff.jpg")
 nonlinearTseries::mutualInformation(diferencia_ordinaria,lag.max = 100)
+dev.off()
 ```
 
 # Estacionalidad

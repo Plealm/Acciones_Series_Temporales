@@ -131,7 +131,7 @@ layout = html.Div(
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
         ),
-        html.Img(src=lambda_plot, style={ 'height': '100%','width': 'auto', 'margin-left': '350px'}),
+        html.Img(src=lambda_plot,  style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
         dcc.Graph(figure=fig)
     ]
 )

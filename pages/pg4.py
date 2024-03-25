@@ -203,12 +203,20 @@ fig6.update_layout(
 
 #---------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------
-#-------------------------- Diagrama de Retardos ---------------------------------
+#-------------------------- Diagramas de R  --------------------------------------
 #---------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------
 
 
-lag_plot = Image.open("./img/lag1_plot.png")
+acf_plot_lowess = Image.open("./img/acf_detrend_lowess.jpg")
+acf_plot_Diff = Image.open("./img/acf_detrend_Diff.jpg")
+
+lag_plot_lowess = Image.open("./img/lag_detrend_lowess.jpg")
+lag_plot_Diff = Image.open("./img/lag_detrend_Diff.jpg")
+
+AMI_plot_lowess = Image.open("./img/AMI_detrend_lowess.jpg")
+AMI_plot_Diff = Image.open("./img/AMI_detrend_Diff.jpg")
+
 
 
 
@@ -241,8 +249,44 @@ layout = html.Div(
         ),
          dcc.Graph(figure=fig),
          
-
+        dcc.Markdown(
+        ''' 
+        ### 3.1.1 Función de Auto Correlación (ACF) Lowess
+                
+        La función de autocorrelación (ACF) es una medida de la correlación
+        entre una serie temporal y una versión retrasada de sí misma. 
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=acf_plot_lowess, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
          
+        dcc.Markdown(
+        ''' 
+        ### 3.1.2 Diagramas de dispersión para los retardos Lowess
+        
+        Vamos a hacer gráficos de dispersión para chequear que tipos de relaciones hay entre los retardos 
+        de la variable interés. Esto permite chequear si hay posibles relaciones no-lineales.
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=lag_plot_lowess, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
+         
+        dcc.Markdown(
+        ''' 
+        ### 3.1.3 Información Mutua Ajustada (AMI) Lowess
+        
+        La información mutua ajustada (AMI) es una medida de la dependencia entre dos variables
+        aleatorias en términos de la cantidad de información.
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=AMI_plot_lowess, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
         dcc.Markdown(
             ''' 
             ## 3.2 Diferencia ordinaria
@@ -257,18 +301,46 @@ layout = html.Div(
         ),
          dcc.Graph(figure=fig6),
          
+              dcc.Markdown(
+        ''' 
+        ### 3.1.1 Función de Auto Correlación (ACF) Diff
+                
+        La función de autocorrelación (ACF) es una medida de la correlación
+        entre una serie temporal y una versión retrasada de sí misma. 
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=acf_plot_Diff, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
          
         dcc.Markdown(
-            ''' 
-            ## 3.3 Diagramas de dispersión para los retardos
-
-            Vamos a hacer gráficos de dispersión para chequear que tipos de relaciones hay entre los retardos 
-            de la variable interés. Esto permite chequear si hay posibles relaciones no-lineales.
-            
-            ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
-            dangerously_allow_html=True
-        ),
-        html.Img(src=lag_plot, style={'width': '60%', 'height': 'auto', 'margin-left': '250px'}),
+        ''' 
+        ### 3.1.2 Diagramas de dispersión para los retardos Diff
+        
+        Vamos a hacer gráficos de dispersión para chequear que tipos de relaciones hay entre los retardos 
+        de la variable interés. Esto permite chequear si hay posibles relaciones no-lineales.
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=lag_plot_Diff, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
+         
+        dcc.Markdown(
+        ''' 
+        ### 3.1.3 Información Mutua Ajustada (AMI) Diff
+        
+        La información mutua ajustada (AMI) es una medida de la dependencia entre dos variables
+        aleatorias en términos de la cantidad de información.
+        ''',
+        mathjax=True,
+        style={'text-align': 'center', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto', 'margin-bottom': '20px'}
+    ),
+    html.Img(src=AMI_plot_Diff, style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+    
+         
+        
          
          
         

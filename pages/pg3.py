@@ -756,7 +756,7 @@ layout = html.Div(
          
         dcc.Markdown(
             ''' 
-            ##  2.6 descomposición por Promedios Moviles
+            ##  2.6 Descomposición por Promedios Moviles
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
         ),
