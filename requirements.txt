@@ -7,5 +7,6 @@ datetime
 matplotlib
 Pillow
 scipy
+dash_bootstrap_components
 statsmodels
 gunicorn==19.7.1
