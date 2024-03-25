@@ -4,7 +4,6 @@ plotly
 yfinance
 numpy
 datetime
-warnings
 matplotlib
 PIL
 scipy
