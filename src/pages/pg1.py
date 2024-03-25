@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 import yfinance as yf
 import numpy as np
 import datetime as dt
-import warnings
 import matplotlib.pyplot as plt
 from PIL import Image
 

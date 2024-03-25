@@ -8,7 +8,6 @@ from scipy.ndimage import gaussian_filter1d
 import statsmodels.api as sm
 from scipy.stats import gaussian_kde
 from plotly.subplots import make_subplots
-import warnings
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import boxcox
@@ -18,8 +17,6 @@ import matplotlib.pyplot as plt
 import base64
 from PIL import Image
 
-
-warnings.filterwarnings("ignore")
 
 # Importar datos
 ticker_name = 'BC'

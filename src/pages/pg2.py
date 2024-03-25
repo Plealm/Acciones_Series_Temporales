@@ -6,7 +6,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 import datetime as dt
-import warnings
 import matplotlib.pyplot as plt
 from scipy.stats import boxcox
 import yfinance as yf
