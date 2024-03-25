@@ -1,0 +1,12 @@
+dash==2.9.3
+pandas 
+plotly
+yfinance
+numpy
+datetime
+warnings
+matplotlib
+PIL
+scipy
+statsmodels
+gunicorn=19.7.1

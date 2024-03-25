@@ -14,7 +14,6 @@ from scipy.stats import boxcox
 from statsmodels.tsa.seasonal import STL
 import yfinance as yf
 import matplotlib.pyplot as plt
-import base64
 from PIL import Image
 
 

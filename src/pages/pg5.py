@@ -6,7 +6,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from scipy.ndimage import gaussian_filter1d
 import statsmodels.api as sm
-import calendar
 from scipy.stats import gaussian_kde
 from plotly.subplots import make_subplots
 import warnings
