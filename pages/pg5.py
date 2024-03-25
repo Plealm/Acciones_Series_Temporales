@@ -39,7 +39,7 @@ fig1 = px.box(df, x='Month_Name', y='Trend_Removed', title='Box Plot de trend_re
 fig1.update_layout(title_text='Box Plot por Mes', title_x=0.5)
 
 
-perio = Image.open("../img/periodograma.png")
+perio = Image.open("./img/periodograma.png")
 
 ##################################################################33
 ####################################################################3

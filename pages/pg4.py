@@ -208,7 +208,7 @@ fig6.update_layout(
 #---------------------------------------------------------------------------------
 
 
-lag_plot = Image.open("../img/lag1_plot.png")
+lag_plot = Image.open("./img/lag1_plot.png")
 
 
 

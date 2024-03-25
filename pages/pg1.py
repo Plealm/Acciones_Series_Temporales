@@ -84,7 +84,7 @@ fig.update_layout(
     )
 )
 
-acf = Image.open("../img/acf.png")
+acf = Image.open("./img/acf.png")
 
 
 
