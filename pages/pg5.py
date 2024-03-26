@@ -198,7 +198,7 @@ layout = html.Div(
             ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
             dangerously_allow_html=True
         ),
-         dcc.Graph(figure=fig_median_year),
+         dcc.Graph(figure=fig_month),
          
          
         dcc.Markdown(
