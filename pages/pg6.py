@@ -249,6 +249,51 @@ results["Multiplicative"] = [round(fit5.params[p], 3) for p in params] + [round(
 
 
 
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+#--------------------------------- Árbol de Decisión -----------------------------
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+
+
+"""
+Creación de variables rezagadas
+"""
+
+df1 = pd.DataFrame()
+for i in range(10, 0, -1):
+    shifted_values = df['Close'].shift(i)
+    df1['t-' + str(i)] = shifted_values  # Selecciona solo las filas sin NaN
+
+# Ajustar el índice a las filas seleccionadas
+df1.index = df['Date']
+df1['t'] = df['Close'].values
+df1 = df1.dropna()
+
+print(df1.head(5))
+
+"""
+Dividir los datos
+"""
+
+split = df1.values
+# split into lagged variables and original time series
+X1= split[:, 0:-1]  # slice all rows and start with column 0 and go up to but not including the last column
+Y1 =split[:,-1] 
+
+traintarget_size = int(len(Y1) * 0.70) 
+valtarget_size = int(len(Y1) * 0.10)+1# Set split
+testtarget_size = int(len(Y1) * 0.20)# Set split
+train_target, val_target,test_target = Y1[0:traintarget_size],Y1[(traintarget_size):(traintarget_size+valtarget_size)] ,Y1[(traintarget_size+valtarget_size):len(Y1)]
+
+
+trainfeature_size = int(len(X1) * 0.70)
+valfeature_size = int(len(X1) * 0.10)+1# Set split
+testfeature_size = int(len(X1) * 0.20)# Set split
+train_feature, val_feature,test_feature = X1[0:traintarget_size],X1[(traintarget_size):(traintarget_size+valtarget_size)] ,X1[(traintarget_size+valtarget_size):len(Y1)]
+
+
+
 
 
 
