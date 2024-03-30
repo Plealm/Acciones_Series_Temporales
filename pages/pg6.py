@@ -1,5 +1,6 @@
 import dash
 from dash import dcc, html
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -7,6 +8,10 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 from PIL import Image
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing, Holt
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error as squared
+import base64
 
 
 # Descargar datos
@@ -270,7 +275,7 @@ df1.index = df['Date']
 df1['t'] = df['Close'].values
 df1 = df1.dropna()
 
-print(df1.head(5))
+
 
 """
 Dividir los datos
@@ -293,8 +298,109 @@ testfeature_size = int(len(X1) * 0.20)# Set split
 train_feature, val_feature,test_feature = X1[0:traintarget_size],X1[(traintarget_size):(traintarget_size+valtarget_size)] ,X1[(traintarget_size+valtarget_size):len(Y1)]
 
 
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+#--------------------------------- Profundidad------ -----------------------------
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+
+train_scores = []
+val_scores = []
+val_rmse = []
+
+# Define the range of maximum depths to test
+depths = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+# Iterate over different maximum depths
+for d in depths:
+    # Create the tree and fit it
+    decision_tree = DecisionTreeRegressor(max_depth=d)
+    decision_tree.fit(train_feature, train_target)
+
+    # Calculate R2 scores on train and validation sets
+    train_score = decision_tree.score(train_feature, train_target)
+    val_score = decision_tree.score(val_feature, val_target)
+    train_scores.append(train_score)
+    val_scores.append(val_score)
+
+    # Calculate RMSE on validation set
+    val_rmse.append(squared(decision_tree.predict(val_feature), val_target, squared=False))
+
+# Define the depths of interest
+depths_of_interest = [4, 5, 6, 7]
+
+# Create an empty DataFrame to store the results
+results_df = pd.DataFrame(columns=["Depth", "Train R2", "Val R2", "Val RMSE"])
+
+# Iterate over the depths of interest
+for depth in depths_of_interest:
+    # Find the index of the depth in the list of all depths
+    depth_index = depths.index(depth)
+    
+    # Add the results for the current depth to a temporary DataFrame
+    temp_df = pd.DataFrame({
+        "Depth": [depth],
+        "Train R2": [train_scores[depth_index]],
+        "Val R2": [val_scores[depth_index]],
+        "Val RMSE": [val_rmse[depth_index]]
+    })
+    
+    # Concatenate the temporary DataFrame with the main results DataFrame
+    results_df = pd.concat([results_df, temp_df], ignore_index=True)
+    
+results_df = results_df.round(3)
 
 
+
+depth = Image.open("./img/depth_DT.png")
+
+depth_6 = Image.open('./img/profundidad_DT_6.png')
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+#--------------------------------- CPP_alpha -----------------------------
+#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
+
+ccp_alpha = Image.open("./img/alpha_DT.png")
+
+alpha_0 = Image.open("./img/alpha_DT_0.png")
+
+
+train_val_feature=np.concatenate((train_feature,val_feature),axis=0)
+train_val_target=np.concatenate((train_target,val_target),axis=0)
+
+ccp_alphas = [i for i in range(0, 20, 2)]
+
+# Crea un DataFrame vacío para almacenar los errores
+error_df = pd.DataFrame(columns=["ccp_alpha", "RMSE Entrenamiento", "RMSE Prueba"])
+
+# Itera sobre los valores de ccp_alpha
+for alpha in ccp_alphas:
+    # Crea el árbol con el ccp_alpha actual
+    decision_tree = DecisionTreeRegressor(ccp_alpha=alpha)
+    decision_tree.fit(train_val_feature, train_val_target)
+
+    # Predice valores para entrenamiento y prueba
+    train_val_prediction = decision_tree.predict(train_val_feature)
+    test_prediction = decision_tree.predict(test_feature)
+
+    # Calcula los errores
+    train_rmse = squared(train_val_prediction, train_val_target, squared=False)
+    test_rmse = squared(test_prediction, test_target, squared=False)
+
+    # Agrega los errores al DataFrame
+    temp_df = pd.DataFrame({
+        "ccp_alpha": [alpha],
+        "RMSE Entrenamiento": [train_rmse],
+        "RMSE Prueba": [test_rmse]
+    })
+    error_df = pd.concat([error_df, temp_df], ignore_index=True)
+
+error_df = error_df.round(3)
+
+
+
+Diagrama_DT = Image.open("./img/diagrama_DT.png")
 
 
 
@@ -441,9 +547,100 @@ layout = html.Div(
                 [html.Tr([html.Th("")] + [html.Th(col) for col in results.columns], style={'background-color': 'lightblue'})] +
                 [html.Tr([html.Td(dcc.Markdown(results.index[i], mathjax=True))] + 
                          [html.Td(dcc.Markdown(str(results.iloc[i][col]), mathjax=True), style={'text-align': 'center'}) for col in results.columns]) for i in range(len(results))],
-                style={'margin': '0 auto', 'max-width': '800px', 'text-align': 'center', 'border-spacing': '10px'}
+                style={'margin': '0 auto', 'width': '80%', 'text-align': 'center' },
             )
         ],
         style={'text-align': 'center'}
-    )
+    ),
+            
+            dcc.Markdown(
+                ''' 
+                ## 5.2. Árbol de Decisión
+                
+                En esta sección se presenta la implementación de un árbol de decisión para predecir el precio de cierre de una acción. 
+                El árbol de decisión es un modelo de aprendizaje automático que se utiliza para predecir una variable objetivo en 
+                función de varias variables de entrada. En este caso, se utilizan variables rezagadas de la serie de tiempo como entradas
+                para predecir el precio de cierre futuro.
+                ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+                dangerously_allow_html=True
+            ),
+            
+            dcc.Markdown(
+                ''' 
+                ### 5.2.1 Profundidad del árbol de decisión
+                
+                Por medio del ajuste de arboles de decisión con diferentes profundidades, se puede observar como el
+                modelo se ajusta a los datos de entrenamiento  y validación, teniendo suficiente información con su 
+                $R^2$ y el error cuadrático medio (RMSE) en los datos de validación.
+                
+                Analizando la tabla inferior se opta para que la profundidad del árbol sea **6**.
+                
+                ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+                dangerously_allow_html=True
+            ),
+            
+            html.Img(src=depth,  style={'display': 'block', 'margin': 'auto', 'width': '80%', 'height': 'auto'}),
+            
+            
+        html.Div([
+            html.Table([
+                html.Tr([html.Th("")] + [html.Th(col) for col in results_df.columns], style={'background-color': 'lightblue'}),
+                *[html.Tr([html.Td(dcc.Markdown(results_df.index[i], mathjax=True)),
+                *[html.Td(dcc.Markdown(str(results_df.iloc[i][col]), mathjax=True), style={'text-align': 'center'}) for col in results_df.columns]
+                ]) for i in range(len(results_df))]
+                ], style={'margin': '0 auto', 'width': '80%', 'text-align': 'center' },)
+        ], style={'text-align': 'center'}),
+        
+        html.Img(src=depth_6,  style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+        
+        dcc.Markdown(
+                ''' 
+                ### 5.2.2 CCP Alpha en Árboles de Decisión
+                
+                El parámetro de complejidad de poda alfa, conocido como CCP alpha, es un parámetro crucial en el proceso de poda de árboles de decisión. Determina la cantidad de reducción requerida en la impureza total de un nodo para llevar a cabo la división. Un valor más alto de CCP alpha lleva a una poda más agresiva, lo que resulta en árboles más pequeños y menos profundos.
+
+                La fórmula para calcular el CCP alpha se expresa como:
+                
+                $$
+                \\text{CCP alpha} = \\frac{\\text{Impureza del nodo padre} - \\text{Impureza del nodo hijo}}{\\text{Número de muestras en el nodo padre} - \\text{Número de muestras en el nodo hijo}}
+                $$
+                
+                Donde:
+                
+                - La impureza del nodo se refiere a una medida de cuán mezcladas están las clases en un nodo.
+                - El número de muestras en el nodo se refiere al número de observaciones en el nodo.
+                
+                El proceso de poda se lleva a cabo ajustando el árbol para minimizar una función de coste que incluye la impureza de los nodos y una penalización basada en el valor de CCP alpha. Esto asegura que el árbol resultante no esté sobreajustado a los datos de entrenamiento.
+                
+                Al analizar la tabla a continuación, se determina que un valor de CCP alpha de **0.0** es óptimo para el ajuste de los árboles de decisión, equilibrando la capacidad del modelo para generalizar con su complejidad.
+                
+                ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+                dangerously_allow_html=True
+            ),
+        
+        html.Img(src=ccp_alpha,  style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+        
+        html.Div([
+            html.Table([
+                html.Tr([html.Th("")] + [html.Th(col) for col in error_df.columns], style={'background-color': 'lightblue'}),
+                *[html.Tr([html.Td(dcc.Markdown(error_df.index[i], mathjax=True)),
+                *[html.Td(dcc.Markdown(str(error_df.iloc[i][col]), mathjax=True), style={'text-align': 'center'}) for col in error_df.columns]
+                ]) for i in range(len(error_df))]
+                ], style={'margin': '0 auto', 'width': '80%', 'text-align': 'center' },)
+        ], style={'text-align': 'center'}),
+        
+        html.Img(src=alpha_0,  style={'display': 'block', 'margin': 'auto', 'width': '60%', 'height': 'auto'}),
+        
+        dcc.Markdown(
+                ''' 
+                ### 5.2.3 Diagrama DT
+                
+                Déspues de analizar cuales son los mejores hiper-parametros para el árbol de decisión, se procede a realizar el ajuste del modelo 
+                con los datos de entrenamiento y validación, dando como reusltado el siguiente diagrama,
+                
+                ''',mathjax=True, style={'text-align': 'center', 'margin-bottom': '20px', 'max-width': '800px', 'margin-left': 'auto', 'margin-right': 'auto'},
+                dangerously_allow_html=True
+            ),
+        html.Img(src=Diagrama_DT,  style={'display': 'block', 'margin': 'auto', 'width': '80%', 'height': 'auto'}),
 ])
+
